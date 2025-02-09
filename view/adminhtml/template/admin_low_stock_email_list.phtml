@@ -1,0 +1,8 @@
+<?php
+$lowStockList = $block->getList();
+?>
+<table>
+    <?php foreach ($lowStockList as $_item) : ?>
+        <?= $_item->getId()?>
+    <?php endforeach; ?>
+</table>
