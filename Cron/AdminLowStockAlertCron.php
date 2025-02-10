@@ -8,6 +8,7 @@ use Thao\AdminLowStockNotification\Helper\Data;
 use Magento\Framework\Mail\Template\TransportBuilder;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Framework\Translate\Inline\StateInterface;
+use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 
 class AdminLowStockAlertCron
 {
@@ -15,6 +16,7 @@ class AdminLowStockAlertCron
     protected $transportBuilder;
     protected $storeManager;
     protected $inlineTranslation;
+    protected $timeZone;
 
     /**
      * @var Data
@@ -35,6 +37,8 @@ class AdminLowStockAlertCron
      * @param StoreManagerInterface $storeManager
      * @param StateInterface $inlineTranslation
      * @param ScopeConfigInterface $scopeConfig
+     * @param \Magento\Framework\Registry $registry
+     * @param TimezoneInterface $timeZone
      */
     public function __construct(
         CollectionFactory $adminLowStockCollectionFactory,
@@ -43,7 +47,8 @@ class AdminLowStockAlertCron
         StoreManagerInterface $storeManager,
         StateInterface $inlineTranslation,
         ScopeConfigInterface $scopeConfig,
-        \Magento\Framework\Registry $registry
+        \Magento\Framework\Registry $registry,
+        TimezoneInterface $timeZone
     ) {
         $this->adminLowStockCollectionFactory = $adminLowStockCollectionFactory;
         $this->helper = $helper;
@@ -52,6 +57,7 @@ class AdminLowStockAlertCron
         $this->inlineTranslation = $inlineTranslation;
         $this->scopeConfig = $scopeConfig;
         $this->registry = $registry;
+        $this->timeZone = $timeZone;
 
     }
 
@@ -70,8 +76,11 @@ class AdminLowStockAlertCron
             return;
         }
         $isSendMailSuccess = $this->sendMail();
+        $currentime = $this->timeZone->date()->format('Y-m-d H:i:s');
         if ($isSendMailSuccess) {
-            $adminLowStockCollection->setDataToAll('status',1)->save();
+            $adminLowStockCollection->setDataToAll('status',1)
+                ->setDataToAll('add_date',$currentime)
+                ->save();
         }
     }
 
@@ -104,8 +113,6 @@ class AdminLowStockAlertCron
                 ->setFrom($sender)
                 ->addTo($sendToEmail)
                 ->getTransport();
-            $transport->sendMessage();
-
             $transport->sendMessage();
             return true;
         } catch (\Exception $e) {
