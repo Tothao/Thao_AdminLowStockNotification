@@ -40,10 +40,28 @@ class AdminLowStockAlertCron
             ->getValue('trans_email/ident_general/name', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
 
         $this->inlineTranslation->suspend();
+
+        $sendToEmail = $this->helper->getAdminEmail();
         $sender = [
             'name' => $senderName,
             'email' => $senderEmail,
         ];
+        $transport = $this->transportBuilder
+            ->setTemplateIdentifier('AdminLowStockAlertCron_general_email_template')
+            ->setTemplateOptions(
+                    [
+                        'area' => \Magento\Framework\App\Area::AREA_ADMINHTML,
+                        'store' => \Magento\Store\Model\Store::DEFAULT_STORE_ID,
+                    ]
+            )
+            ->setTemplateVars([
+//                        'customer_name' => $customerName,
+//                        'quote_id' => $quote->getId(),
+//                        'coupon_code'=> $couponCode
+             ])
+        ->setFrom($sender)
+        ->addTo($sendToEmail)
+        ->getTransport();
     }
 
 }

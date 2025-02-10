@@ -1,8 +1,35 @@
 <?php
 $lowStockList = $block->getList();
 ?>
-<table>
-    <?php foreach ($lowStockList as $_item) : ?>
-        <?= $_item->getId()?>
-    <?php endforeach; ?>
-</table>
+
+<?php if (!empty($lowStockList)) : ?>
+    <table border="1" cellspacing="0" cellpadding="5">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Product ID</th>
+            <th>Tên Sản Phẩm</th>
+            <th>Số Lượng Còn Lại</th>
+            <th>Stock ID</th>
+            <th>Store ID</th>
+            <th>Website ID</th>
+        </tr>
+        </thead>
+        <tbody>
+        <?php foreach ($lowStockList as $_item) : ?>
+            <tr>
+                <td><?= $_item['id'] ?></td>
+                <td><?= $_item['product_id'] ?></td>
+                <td><?= $_item['name'] ?></td>
+                <td><?= $_item['remaining_quantity'] ?></td>
+                <td><?= $_item['stock_id'] ?></td>
+                <td><?= $_item['store_id'] ?></td>
+                <td><?= $_item['website_id'] ?></td>
+            </tr>
+        <?php endforeach; ?>
+        </tbody>
+    </table>
+<?php else : ?>
+    <p>Không có sản phẩm nào trong danh sách hết hàng.</p>
+<?php endif; ?>
+

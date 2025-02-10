@@ -9,9 +9,6 @@ use Magento\Store\Model\StoreManagerInterface;
 
 class Data extends AbstractHelper
 {
-    const PENDING_STATUS = 2;
-    const REJECTED_STATUS = 0;
-    const APPROVED_STATUS = 1;
     protected $transportBuilder;
     protected $scopeConfig;
     protected $storeManager;
@@ -46,6 +43,15 @@ class Data extends AbstractHelper
         );
         return $lowStock;
     }
+
+    public function getAdminEmail(){
+        $email = $this->scopeConfig->getValue(
+            'admin_low_stock_notification/general/notification_email',
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+        );
+        return $email;
+    }
+
 
 }
 
