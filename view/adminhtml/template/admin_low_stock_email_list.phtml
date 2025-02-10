@@ -1,22 +1,23 @@
 <?php
-$lowStockList = $block->getList();
-?>
-
-<?php if (!empty($lowStockList)) : ?>
-    <table border="1" cellspacing="0" cellpadding="5">
+$lowStockProducts = $block->getLowStockProducts();
+if (empty($lowStockProducts)) :
+    ?>
+    <p>No products are low in stock.</p>
+<?php else : ?>
+    <table border="1" cellpadding="5" cellspacing="0" width="100%">
         <thead>
         <tr>
             <th>ID</th>
             <th>Product ID</th>
-            <th>Tên Sản Phẩm</th>
-            <th>Số Lượng Còn Lại</th>
+            <th>Name</th>
+            <th>Remaining Quantity</th>
             <th>Stock ID</th>
             <th>Store ID</th>
             <th>Website ID</th>
         </tr>
         </thead>
         <tbody>
-        <?php foreach ($lowStockList as $_item) : ?>
+        <?php foreach ($lowStockProducts as $_item) : ?>
             <tr>
                 <td><?= $_item['id'] ?></td>
                 <td><?= $_item['product_id'] ?></td>
@@ -29,7 +30,4 @@ $lowStockList = $block->getList();
         <?php endforeach; ?>
         </tbody>
     </table>
-<?php else : ?>
-    <p>Không có sản phẩm nào trong danh sách hết hàng.</p>
 <?php endif; ?>
-

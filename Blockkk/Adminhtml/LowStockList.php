@@ -41,11 +41,11 @@ class LowStockList extends \Magento\Framework\View\Element\Template
                     'id' => $lowStock->getId(),
                     'product_id' => $product->getId(),
                     'name' => $product->getName(),
-                   'remaining_quadntity' => $lowStock->getRemainingQuantity(),
+                   'remaining_quantity' => $lowStock->getRemainingQuantity(),
                    'stock_id' => $lowStock->getStockId(),
                    'store_id' => $lowStock->getStoreId(),
                     'website_id' => $lowStock->getWebsiteId(),
-            ];
+                ];
             } catch (NoSuchEntityException $e) {
                 $this->helper->logException($e);
             }

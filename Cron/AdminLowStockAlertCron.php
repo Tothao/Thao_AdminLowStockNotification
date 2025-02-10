@@ -4,17 +4,35 @@ namespace Thao\AdminLowStockNotification\Cron;
 
 use Thao\AdminLowStockNotification\Model\ResourceModel\AdminLowStockNotification\CollectionFactory;
 use Thao\AdminLowStockNotification\Helper\Data;
+use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\Translate\Inline\StateInterface;
+use Magento\Framework\Mail\Template\TransportBuilder;
+use Magento\Store\Model\StoreManagerInterface;
 class AdminLowStockAlertCron
 {
     protected $adminLowStockCollectionFactory;
     protected $helper;
+    protected $scopeConfig;
+    protected $inlineTranslation;
+    protected $transportBuilder;
+    protected $storeManager;
+
 
     public function __construct(
         CollectionFactory $adminLowStockCollectionFactory,
-        Data            $helper
+        Data            $helper,
+        ScopeConfigInterface $scopeConfig,
+        StateInterface $inlineTranslation,
+        TransportBuilder $transportBuilder,
+        StoreManagerInterface $storeManager
+
     ) {
         $this->adminLowStockCollectionFactory = $adminLowStockCollectionFactory;
         $this->helper = $helper;
+        $this->scopeConfig = $scopeConfig;
+        $this->inlineTranslation = $inlineTranslation;
+        $this->transportBuilder = $transportBuilder;
+        $this->storeManager = $storeManager;
     }
 
     public function execute()
@@ -30,6 +48,7 @@ class AdminLowStockAlertCron
         if(!$adminLowStockCollection->getSize()){
             return;
         }
+        $this->sendMail();
     }
 
     public function sendMail()
@@ -38,6 +57,7 @@ class AdminLowStockAlertCron
             ->getValue('trans_email/ident_general/email', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
         $senderName = $this->scopeConfig
             ->getValue('trans_email/ident_general/name', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        $setTemplateVar = $this->helper->getList();
 
         $this->inlineTranslation->suspend();
 
@@ -54,14 +74,11 @@ class AdminLowStockAlertCron
                         'store' => \Magento\Store\Model\Store::DEFAULT_STORE_ID,
                     ]
             )
-            ->setTemplateVars([
-//                        'customer_name' => $customerName,
-//                        'quote_id' => $quote->getId(),
-//                        'coupon_code'=> $couponCode
-             ])
+            ->setTemplateVars($setTemplateVar)
         ->setFrom($sender)
         ->addTo($sendToEmail)
         ->getTransport();
+        $transport->sendMessage();
     }
 
 }
