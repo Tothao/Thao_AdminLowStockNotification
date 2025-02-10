@@ -2,19 +2,57 @@
 
 namespace Thao\AdminLowStockNotification\Cron;
 
+use Magento\Framework\App\Config\ScopeConfigInterface;
 use Thao\AdminLowStockNotification\Model\ResourceModel\AdminLowStockNotification\CollectionFactory;
 use Thao\AdminLowStockNotification\Helper\Data;
+use Magento\Framework\Mail\Template\TransportBuilder;
+use Magento\Store\Model\StoreManagerInterface;
+use Magento\Framework\Translate\Inline\StateInterface;
+
 class AdminLowStockAlertCron
 {
     protected $adminLowStockCollectionFactory;
+    protected $transportBuilder;
+    protected $storeManager;
+    protected $inlineTranslation;
+
+    /**
+     * @var Data
+     */
     protected $helper;
 
+    /**
+     * @var ScopeConfigInterface
+     */
+    protected $scopeConfig;
+
+    protected $registry;
+
+    /**
+     * @param CollectionFactory $adminLowStockCollectionFactory
+     * @param Data $helper
+     * @param TransportBuilder $transportBuilder
+     * @param StoreManagerInterface $storeManager
+     * @param StateInterface $inlineTranslation
+     * @param ScopeConfigInterface $scopeConfig
+     */
     public function __construct(
         CollectionFactory $adminLowStockCollectionFactory,
-        Data            $helper
+        Data            $helper,
+        TransportBuilder $transportBuilder,
+        StoreManagerInterface $storeManager,
+        StateInterface $inlineTranslation,
+        ScopeConfigInterface $scopeConfig,
+        \Magento\Framework\Registry $registry
     ) {
         $this->adminLowStockCollectionFactory = $adminLowStockCollectionFactory;
         $this->helper = $helper;
+        $this->transportBuilder = $transportBuilder;
+        $this->storeManager = $storeManager;
+        $this->inlineTranslation = $inlineTranslation;
+        $this->scopeConfig = $scopeConfig;
+        $this->registry = $registry;
+
     }
 
     public function execute()
@@ -26,9 +64,14 @@ class AdminLowStockAlertCron
         $adminLowStockCollection = $this->adminLowStockCollectionFactory->create()
             ->addFieldToFilter('status', 0);
 
+        $this->registry->register('adminLowStockCollection', $adminLowStockCollection);
 
         if(!$adminLowStockCollection->getSize()){
             return;
+        }
+        $isSendMailSuccess = $this->sendMail();
+        if ($isSendMailSuccess) {
+            $adminLowStockCollection->setDataToAll('status',1)->save();
         }
     }
 
@@ -46,22 +89,29 @@ class AdminLowStockAlertCron
             'name' => $senderName,
             'email' => $senderEmail,
         ];
-        $transport = $this->transportBuilder
-            ->setTemplateIdentifier('AdminLowStockAlertCron_general_email_template')
-            ->setTemplateOptions(
+
+        try {
+            $transport = $this->transportBuilder
+                ->setTemplateIdentifier('AdminLowStockAlertCron_general_email_template')
+                ->setTemplateOptions(
                     [
                         'area' => \Magento\Framework\App\Area::AREA_ADMINHTML,
                         'store' => \Magento\Store\Model\Store::DEFAULT_STORE_ID,
                     ]
-            )
-            ->setTemplateVars([
-//                        'customer_name' => $customerName,
-//                        'quote_id' => $quote->getId(),
-//                        'coupon_code'=> $couponCode
-             ])
-        ->setFrom($sender)
-        ->addTo($sendToEmail)
-        ->getTransport();
+                )
+                ->setTemplateVars([
+                ])
+                ->setFrom($sender)
+                ->addTo($sendToEmail)
+                ->getTransport();
+            $transport->sendMessage();
+
+            $transport->sendMessage();
+            return true;
+        } catch (\Exception $e) {
+            return false;
+            $e->getMessage();
+        }
     }
 
 }

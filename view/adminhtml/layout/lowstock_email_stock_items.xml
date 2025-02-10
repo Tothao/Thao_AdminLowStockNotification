@@ -7,8 +7,6 @@
 -->
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="1column" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
     <body>
-        <referenceContainer name="content">
-            <block class="Thao\AdminLowStockNotification\Block\Adminhtml\LowStock\List" name="admin.low.stock.notificationList" template="Thao_AdminLowStockNotification::admin_low_stock_email_list.phtml"/>
-        </referenceContainer>
+        <block class="Thao\AdminLowStockNotification\Block\Adminhtml\LowStockList" name="admin.low.stock.notificationList" template="Thao_AdminLowStockNotification::admin_low_stock_email_list.phtml"/>
     </body>
 </page>

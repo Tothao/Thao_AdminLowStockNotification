@@ -1,8 +1,8 @@
 <!-- admin_low_stock_alert_email.html -->
 <!--@subject {{trans "Low Stock Alert from %store_name" store_name=$store.frontend_name}} @-->
-
-
-{{template config_path="design/email/header_template"}}
+<!--@vars {
+"layout handle=\"admin_low_stock_email\",
+} @-->
 
 <h1>Low Stock Alert</h1>
 
@@ -10,12 +10,9 @@
 
 <p>The following products are running low on stock:</p>
 
-{{layout handle="admin_low_stock_email" area="adminhtml"}}
-
+{{layout area="adminhtml" handle="lowstock_email_stock_items"}}
 
 <p>Please restock these products as soon as possible.</p>
 
 <p>Best Regards,<br>
     {{var store.getFrontendName()}}</p>
-
-{{template config_path="design/email/footer_template"}}
