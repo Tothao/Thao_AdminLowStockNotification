@@ -7,24 +7,45 @@ use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\View\Element\Template;
 use Thao\AdminLowStockNotification\Helper\Data;
 use Thao\AdminLowStockNotification\Model\ResourceModel\AdminLowStockNotification\CollectionFactory;
-
-
 class LowStockList extends \Magento\Framework\View\Element\Template
 {
+    /**
+     * @var CollectionFactory
+     */
     protected $adminLowStockCollectionFactory;
+
+    /**
+     * @var ProductRepositoryInterface
+     */
     protected $productRepository;
+
+    /**
+     * @var Data
+     */
     protected $helper;
 
+    /**
+     * @var \Magento\Framework\Registry
+     */
     protected $registry;
 
+    /**
+     * Constructor
+     *
+     * @param CollectionFactory $adminLowStockCollectionFactory
+     * @param ProductRepositoryInterface $productRepository
+     * @param Data $helper
+     * @param \Magento\Framework\Registry $registry
+     * @param Template\Context $context
+     * @param array $data
+     */
     public function __construct(
         CollectionFactory          $adminLowStockCollectionFactory,
         ProductRepositoryInterface $productRepository,
         Data                       $helper,
         \Magento\Framework\Registry $registry,
         Template\Context           $context, array $data = []
-    )
-    {
+    ){
         $this->adminLowStockCollectionFactory = $adminLowStockCollectionFactory;
         $this->productRepository = $productRepository;
         $this->helper = $helper;
@@ -32,6 +53,9 @@ class LowStockList extends \Magento\Framework\View\Element\Template
         parent::__construct($context, $data);
     }
 
+    /**
+     * @return array
+     */
     public function getList()
     {
         $adminLowStockCollection = $this->registry->registry('adminLowStockCollection');
