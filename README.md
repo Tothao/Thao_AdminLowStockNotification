@@ -38,6 +38,26 @@ Magento 2 module for sending notifications when product stock is low.
    php bin/magento setup:di:compile
    php bin/magento cache:flush
    ```
+## Configuration Guide
+
+To configure the module, go to **Admin > Configuration > Thaott > Admin LowStock Notification > General Configuration**.
+
+### Use guide:
+
+- **Module Enable:** Enable/disable the module.
+- **Cron Schedule Expression:** Enter a cron expression to schedule low stock alerts. Example: `0 * * * *` runs every hour. Refer to [crontab.guru](https://crontab.guru/) for more details.
+- **Low Stock Threshold:** Set the minimum quantity to trigger an out-of-stock alert.
+- **Notification Email:** Specify the email address to receive low stock notifications.
+
+![General Configuration](docs/images/general_configuration.png)
+
+Additionally, you can run the following command to send the email immediately.
+   ```sh
+   php bin/magento lowstock:send
+   ```
+Reiveiced email
+
+![Email](docs/images/img.png)
 
 ## Support
 
